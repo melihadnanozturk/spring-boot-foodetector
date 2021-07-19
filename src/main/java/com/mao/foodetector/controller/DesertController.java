@@ -18,28 +18,28 @@ public class DesertController {
         this.desertService=desertService;
     }
 
-    @GetMapping("/getall")
+    @GetMapping
     public Iterable<DesertResponse> getAll(){
         return desertService.getAll();
     }
 
-    @GetMapping("/getone/{desertname}")
+    @GetMapping("/{desertname}")
     public BaseResponse getOne(@PathVariable String desertname){
         return desertService.getOne(desertname);
     }
 
 
-    @PutMapping("/updatename/{desertname}/{newname}")
+    @PutMapping("/{desertname}/{newname}")
     public BaseResponse updateName(@PathVariable String desertname, @PathVariable String newname){
         return  desertService.updateName(desertname,newname);
     }
 
-    @DeleteMapping("/delete/{desertname}")
+    @DeleteMapping("/{desertname}")
     public BaseResponse delete(@PathVariable String desertname){
         return desertService.delete(desertname);
     }
 
-    @PostMapping("/newdesert")
+    @PostMapping
     public BaseResponse newDesert(@RequestBody DesertRequest request){
         return desertService.newDesert(request);
     }

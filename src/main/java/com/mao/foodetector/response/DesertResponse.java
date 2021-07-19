@@ -1,6 +1,7 @@
 package com.mao.foodetector.response;
 
 import com.mao.foodetector.entity.material.DesertMaterialEntity;
+import com.mao.foodetector.response.respoMtrl.DesertMaterialResponse;
 import lombok.*;
 
 import javax.persistence.Column;

@@ -2,6 +2,8 @@ package com.mao.foodetector.service.Implement;
 
 import com.mao.foodetector.entity.SoupEntity;
 import com.mao.foodetector.entity.material.SoupMaterialEntity;
+import com.mao.foodetector.exeptions.RegisterAddedBeforeThisException;
+import com.mao.foodetector.exeptions.RegisterNotFoundException;
 import com.mao.foodetector.repository.SoupRepository;
 import com.mao.foodetector.repository.repoMtrl.SoupMaterialRepository;
 import com.mao.foodetector.request.SoupRequest;
@@ -10,12 +12,18 @@ import com.mao.foodetector.response.DoneResponse;
 import com.mao.foodetector.response.SoupResponse;
 import com.mao.foodetector.service.SoupService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+/*bu yorum silinmediyse problem şu:
+ silinen yemeğin malzemeleri yemek silindiğindehalen silinmiyor,
+ material repository' yi service implemente edip çağırmak daha manıtklı
+*/
 public class SoupImp implements SoupService {
 
     @Autowired
@@ -26,7 +34,7 @@ public class SoupImp implements SoupService {
     @Override
     public Iterable<SoupResponse> getAll() {
         List<SoupResponse> liste=new ArrayList<>();
-        soupRepository.findAll().stream().forEach(x->{
+        soupRepository.findAll().forEach(x->{
             SoupResponse response= SoupResponse.builder()
                     .soupName(x.getSoupName())
                     .build();
@@ -37,65 +45,49 @@ public class SoupImp implements SoupService {
 
     @Override
     public BaseResponse getOne(String soupName) {
-        if (soupRepository.findBySoupName(soupName) == null) {
-            DoneResponse response = new DoneResponse("Girilen bilgiden mevcut tatlı yoktur!!!");
-            return response;
-        } else {
-            SoupEntity entity = soupRepository.findBySoupName(soupName);
-            SoupResponse response = new SoupResponse(
-                    entity.getSoupName(),
-                    entity.getMaterials());
-            return response;
-        }
+        SoupEntity entity=soupRepository.findBySoupName(soupName).
+                orElseThrow(()->new RegisterNotFoundException("Girilen isimde çorba bulunamadı!!!"));
+
+        SoupResponse response=new SoupResponse();
+        response.setSoupName(entity.getSoupName());
+        response.setMaterials(entity.getMaterials());
+        return  response;
     }
 
     @Override
     //geliştirilme yapılıcak :D
     public BaseResponse updateName(String  newname,String soupname) {
-        if (soupRepository.findBySoupName(soupname) != null) {
-            SoupEntity entity = soupRepository.findBySoupName(soupname);
-            entity.setSoupName(newname);
-            soupRepository.save(entity);
-            SoupResponse response = SoupResponse.builder()
-                    .soupName(entity.getSoupName())
-                    .build();
+        SoupEntity entity=soupRepository.findBySoupName(soupname).
+                orElseThrow(()->new RegisterNotFoundException("Girilen isimde çorba bulunamadı!!!"));
 
-            return response;
+        entity.setSoupName(newname);
+        soupRepository.save(entity);
+        SoupResponse response=new SoupResponse();
+        response.setSoupName(entity.getSoupName());
 
-        } else {
-            DoneResponse response = new DoneResponse("Geçerli bilgide güncellenicek veri yok!!!");
-            return response;
-        }
+        return response;
     }
 
     @Override
     public BaseResponse delete(String soupName) {
-        if (soupRepository.findBySoupName(soupName) != null) {
-
-            soupRepository.delete(soupRepository.findBySoupName(soupName));
-            DoneResponse response=new DoneResponse("Silme işlemi gerçekleşti. Lütfen silindiğine dair kontrolü el ile yapınız!");
-            return response;
-
-        } else {
-            DoneResponse response = new DoneResponse("Girilen bilgide mevcut kayıt yoktur!!");
-            return response;
-        }
+       soupRepository.delete(soupRepository.findBySoupName(soupName)
+               .orElseThrow(()->new RegisterNotFoundException("Girilen isimde çorba bulunamadı!!!")));
+       DoneResponse response=new DoneResponse("Silme işlemi");
+       return response;
     }
 
     @Override
     public BaseResponse newSoup(SoupRequest request) {
 
-        if (soupRepository.findBySoupName(request.getSoupName()) != null) {
-            DoneResponse response = new DoneResponse("Aynı isimde kayıt var lütfen yemeğin adını değiştirin!!!");
-            return response;
-        } else {
+        if (kayitCekme(request.getSoupName()).isPresent()) {
+            throw new RegisterAddedBeforeThisException("Bu isimde kayıt mevcut!!!", HttpStatus.BAD_REQUEST);
+        }
             SoupEntity entity= SoupEntity.builder()
                     .soupName(request.getSoupName())
                     .build();
             soupRepository.save(entity);
 
-            List<SoupMaterialEntity>liste=request.getMaterials();
-            liste.stream().forEach(x->{
+            request.getMaterials().forEach(x->{
                 SoupMaterialEntity materialEntity=new SoupMaterialEntity();
                 materialEntity.setMaterialName(x.getMaterialName());
                 materialEntity.setMaterialInfo(x.getMaterialInfo());
@@ -103,8 +95,14 @@ public class SoupImp implements SoupService {
                 soupMaterialRepository.save(materialEntity);
             });
 
-            DoneResponse response=new DoneResponse("Çorba eklendi");
+            DoneResponse response=new DoneResponse("Çorba eklendi"+" *El ile kontrol ediniz!!!*");
             return response;
-        }
+
     }
+
+    private Optional<SoupEntity> kayitCekme(String soupName) {
+        return soupRepository.findBySoupName(soupName);
+    }
+
+
 }

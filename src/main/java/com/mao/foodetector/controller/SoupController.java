@@ -18,27 +18,27 @@ public class SoupController {
         this.soupService=soupService;
     }
 
-    @GetMapping("/getall")
+    @GetMapping
     public Iterable<SoupResponse> getAll(){
         return soupService.getAll();
     }
 
-    @GetMapping("/getone/{soupname}")
+    @GetMapping("/{soupname}")
     public BaseResponse getOne(@PathVariable String soupname){
         return soupService.getOne(soupname);
     }
 
-    @PutMapping("/updatename/{soupname}/{newsoupname}")
+    @PutMapping("/{soupname}/{newsoupname}")
     public BaseResponse updateName(@PathVariable String newsoupname,@PathVariable String soupname){
         return soupService.updateName(newsoupname,soupname);
     }
 
-    @DeleteMapping("/delete/{soupname}")
+    @DeleteMapping("/{soupname}")
     public BaseResponse delete(@PathVariable String soupname){
         return soupService.delete(soupname);
     }
 
-    @PostMapping("/newsoup")
+    @PostMapping
     public BaseResponse newSoup(@RequestBody SoupRequest request){
         return soupService.newSoup(request);
     }

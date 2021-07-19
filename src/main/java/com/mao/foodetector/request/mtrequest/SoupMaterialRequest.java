@@ -15,10 +15,7 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SoupMaterialRequest {
-
     private String materialName;
-
     private String materialInfo;
-
     private Integer soupId;
 }

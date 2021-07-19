@@ -15,9 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SoupRequest extends BaseRequest{
 
-
     private String soupName;
-
     private List<SoupMaterialEntity> materials;
 
 }

@@ -2,6 +2,7 @@ package com.mao.foodetector.request;
 
 import com.mao.foodetector.entity.material.DesertMaterialEntity;
 import com.mao.foodetector.entity.material.SoupMaterialEntity;
+import com.mao.foodetector.request.mtrequest.DesertMaterialRequest;
 import com.mao.foodetector.response.BaseResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,9 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class DesertRequest extends BaseRequest {
 
-
     private String desertName;
-
-    private List<DesertMaterialEntity> materials;
+    private List<DesertMaterialRequest> materials;
 
 }

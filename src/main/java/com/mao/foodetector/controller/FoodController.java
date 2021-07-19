@@ -18,27 +18,27 @@ public class FoodController {
         this.foodService=foodService;
     }
 
-    @GetMapping("/getall")
+    @GetMapping
     public Iterable<FoodResponse> getAll(){
         return foodService.getAll();
     }
 
-    @GetMapping("/getone/{foodname}")
+    @GetMapping("/{foodname}")
     public BaseResponse getOne(@PathVariable  String foodname){
         return foodService.getOne(foodname);
     }
 
-    @PutMapping("/updatename/{foodname}/{newname}")
+    @PutMapping("/{foodname}/{newname}")
     public BaseResponse updateName(@PathVariable String foodname,@PathVariable String newname){
         return foodService.updateName(foodname,newname);
     }
 
-    @DeleteMapping("/delete/{foodname}")
+    @DeleteMapping("/{foodname}")
     public BaseResponse delete(@PathVariable String foodname){
         return foodService.delete(foodname);
     }
 
-    @PostMapping("/newdesert")
+    @PostMapping
     public BaseResponse newDesert(@RequestBody FoodRequest request){
         return foodService.newFood(request);
     }

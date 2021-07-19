@@ -9,7 +9,7 @@ import com.mao.foodetector.response.DesertResponse;
 public interface DesertService {
 
     Iterable<DesertResponse> getAll();
-    BaseResponse getOne(String desertName);
+    DesertResponse getOne(String desertName);
     BaseResponse updateName(String desertName, String newName);
     BaseResponse delete(String desertName);
     BaseResponse newDesert(DesertRequest request);
