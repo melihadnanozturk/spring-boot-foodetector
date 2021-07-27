@@ -17,6 +17,6 @@ import java.util.List;
 @Builder
 public class DesertResponse extends BaseResponse{
 
-    private String DesertName;
-    private List<DesertMaterialEntity> DesertMaterial ;
+    private String desertName;
+    private List<DesertMaterialResponse> materials ;
 }

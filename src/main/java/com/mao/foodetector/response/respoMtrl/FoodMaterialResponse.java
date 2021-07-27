@@ -12,5 +12,4 @@ import lombok.Setter;
 public class FoodMaterialResponse {
     private String materialName;
     private String materialInfo;
-    private Integer foodId;
 }

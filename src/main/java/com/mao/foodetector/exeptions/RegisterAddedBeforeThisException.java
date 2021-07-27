@@ -5,7 +5,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class RegisterAddedBeforeThisException extends  RuntimeException{
-    public RegisterAddedBeforeThisException(String message,HttpStatus status){
+    public RegisterAddedBeforeThisException(String message){
         super(message);
     }
-}
+    }
+

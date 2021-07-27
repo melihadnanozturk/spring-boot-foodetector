@@ -12,5 +12,4 @@ import lombok.Setter;
 public class DesertMaterialResponse {
     private String materialName;
     private String materialInfo;
-    private Integer desertId;
 }

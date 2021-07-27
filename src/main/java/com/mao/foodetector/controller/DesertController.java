@@ -5,6 +5,7 @@ import com.mao.foodetector.response.BaseResponse;
 import com.mao.foodetector.response.DesertResponse;
 import com.mao.foodetector.service.DesertService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

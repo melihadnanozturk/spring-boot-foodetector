@@ -13,10 +13,7 @@ import javax.persistence.Id;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SoupResponse {
-
-
+public class SoupMaterialResponse {
     private String materialName;
     private String materialInfo;
-    private Integer soupId;
 }

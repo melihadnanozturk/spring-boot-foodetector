@@ -18,7 +18,6 @@ public class SoupMaterialEntity {
     @Column(name="id")
     private Integer id;
 
-    //@Column(nullable = false)
     @Column(name="material_name")
     private String materialName;
 

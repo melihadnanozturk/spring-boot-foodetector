@@ -10,6 +10,7 @@ import com.mao.foodetector.request.FoodRequest;
 import com.mao.foodetector.response.BaseResponse;
 import com.mao.foodetector.response.DoneResponse;
 import com.mao.foodetector.response.FoodResponse;
+import com.mao.foodetector.response.respoMtrl.FoodMaterialResponse;
 import com.mao.foodetector.service.FoodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,67 +34,77 @@ public class FoodImp implements FoodService {
     private FoodMaterialRepository foodMaterialRepository;
 
     @Override
-    public Iterable<FoodResponse> getAll() {
-        List<FoodResponse> liste=new ArrayList<>();
-         foodRepository.findAll().forEach(x->{
-             FoodResponse response= new FoodResponse();
-             response.setFoodName(x.getFoodName());
-             liste.add(response);
-         });
-         return liste;
+    public List<FoodResponse> getAll() {
+        List<FoodResponse> liste = new ArrayList<>();
+        foodRepository.findAll().forEach(x -> {
+            FoodResponse response = new FoodResponse();
+            response.setFoodName(x.getFoodName());
+            liste.add(response);
+        });
+        return liste;
     }
 
     @Override
-    public BaseResponse getOne(String foodName) {
-        FoodEntity entity=foodRepository.findByFoodName(foodName).
-                orElseThrow(()->new RegisterNotFoundException("Girilen iismde yemek bulunamadı!!!"));
-        FoodResponse response=new FoodResponse();
+    public FoodResponse getOne(String foodName) {
+        FoodEntity entity = foodRepository.findByFoodName(foodName).
+                orElseThrow(() -> new RegisterNotFoundException("Girilen isimde yemek bulunamadı!!!"));
+        FoodResponse response = new FoodResponse();
         response.setFoodName(entity.getFoodName());
-        response.setMaterials(entity.getMaterials());
+        List<FoodMaterialResponse> materials = new ArrayList<>();
+        entity.getMaterials().forEach(x -> {
+            FoodMaterialResponse materialResponse = new FoodMaterialResponse();
+            materialResponse.setMaterialName(x.getMaterialName());
+            materialResponse.setMaterialInfo(x.getMaterialInfo());
+            materials.add(materialResponse);
+        });
+        response.setMaterials(materials);
 
         return response;
     }
 
     @Override
     //response Return olucağına direkt mesaj da verebilirsin
-    public BaseResponse updateName( String foodName,String newname) {
-        FoodEntity entity=foodRepository.findByFoodName(foodName).
-                orElseThrow(()->new RegisterNotFoundException("Verilen isimde yemek bulunamadı!!!"));
+    public FoodResponse updateName(String foodName, String newname) {
+        FoodEntity entity = foodRepository.findByFoodName(foodName).
+                orElseThrow(() -> new RegisterNotFoundException("Verilen isimde yemek bulunamadı!!!"));
         entity.setFoodName(newname);
         foodRepository.save(entity);
-        FoodResponse response=new FoodResponse();
+        FoodResponse response = new FoodResponse();
         response.setFoodName(entity.getFoodName());
-        return  response;
-    }
-
-    @Override
-    public BaseResponse delete(String foodName) {
-        foodRepository.delete(foodRepository.findByFoodName(foodName).
-                orElseThrow(()->new RegisterNotFoundException("Verilen isimde yemek bulunamadı!!!")));
-        DoneResponse response=new DoneResponse("Silme işlemi");
         return response;
     }
 
     @Override
-    //hata olabilir deneme yap!!!
-    //sadece yeni kayıt oluşturur malzemeler eklenmez!!!
+    public DoneResponse delete(String foodName) {
+        FoodEntity entity=foodRepository.findByFoodName(foodName).get();
+                if(entity!=null){
+                    entity.getMaterials().forEach(x->{
+                        foodMaterialRepository.delete(x);
+                    });
+                    foodRepository.delete(entity);
+                    DoneResponse response=new DoneResponse("Silme işlemi gerçekleşti lütfen el ile kontrol ediniz!!!");
+                    return  response;
+                }
+                throw new RegisterNotFoundException("Verilen isimde yemek bulunamadı!!!");
+    }
+
+    @Override
     public BaseResponse newFood(FoodRequest request) {
         if (kayitCekme(request.getFoodName()).isPresent()) {
-            throw new RegisterAddedBeforeThisException("Bu isimden zaten kayıt mevcut!!!", HttpStatus.BAD_REQUEST);
+            throw new RegisterAddedBeforeThisException("Bu isimden zaten kayıt mevcut!!!");
         }
-        FoodEntity entity = FoodEntity.builder()
-                .foodName(request.getFoodName())
-                .build();
+        FoodEntity entity = new FoodEntity();
+        entity.setFoodName(request.getFoodName());
         foodRepository.save(entity);
 
-       request.getMaterials().forEach(x->{
-            FoodMaterialEntity materialEntity=new FoodMaterialEntity();
+        request.getMaterials().forEach(x -> {
+            FoodMaterialEntity materialEntity = new FoodMaterialEntity();
             materialEntity.setMaterialName(x.getMaterialName());
             materialEntity.setMaterialInfo(x.getMaterialInfo());
             materialEntity.setFoodId(entity.getId());
             foodMaterialRepository.save(materialEntity);
         });
-        DoneResponse response=new DoneResponse("Yemek eklendi");
+        DoneResponse response = new DoneResponse("*" + request.getFoodName() + "*  eklendi");
         return response;
     }
 

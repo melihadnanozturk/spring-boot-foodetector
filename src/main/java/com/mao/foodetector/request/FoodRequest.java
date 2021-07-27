@@ -1,6 +1,8 @@
 package com.mao.foodetector.request;
 
 import com.mao.foodetector.entity.material.FoodMaterialEntity;
+import com.mao.foodetector.request.mtrequest.FoodMaterialRequest;
+import com.mao.foodetector.response.respoMtrl.FoodMaterialResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +18,5 @@ import java.util.List;
 public class FoodRequest extends BaseRequest{
 
     private String foodName;
-
-    private List<FoodMaterialEntity> materials;
+    private List<FoodMaterialRequest> materials;
 }

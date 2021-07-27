@@ -1,6 +1,7 @@
 package com.mao.foodetector.response;
 
 import com.mao.foodetector.entity.material.FoodMaterialEntity;
+import com.mao.foodetector.response.respoMtrl.FoodMaterialResponse;
 import lombok.*;
 
 import javax.persistence.Access;
@@ -17,5 +18,5 @@ import java.util.List;
 public class FoodResponse extends  BaseResponse{
 
     private String foodName;
-    private List<FoodMaterialEntity> materials;
+    private List<FoodMaterialResponse> materials;
 }

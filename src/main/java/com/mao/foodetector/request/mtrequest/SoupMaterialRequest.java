@@ -17,5 +17,4 @@ import javax.persistence.Id;
 public class SoupMaterialRequest {
     private String materialName;
     private String materialInfo;
-    private Integer soupId;
 }

@@ -29,4 +29,8 @@ public class FoodMaterialEntity {
     @Column(name="food_id")
     private Integer foodId;
 
+    public FoodMaterialEntity(String material_name,String material_info){
+        this.materialName=material_name;
+        this.materialInfo=material_info;
+    }
 }
