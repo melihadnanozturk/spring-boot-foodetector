@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface FoodRepository extends JpaRepository<FoodEntity,Integer> {
     Optional<FoodEntity> findByFoodName(String foodname);
-    //Verilen malzemelere göre yemek dönen method :)
+    //Verilen malzemelere göre yemek dönen method yazılıcak ileride:)
 }

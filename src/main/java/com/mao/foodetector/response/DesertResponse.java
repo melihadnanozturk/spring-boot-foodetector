@@ -10,12 +10,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DesertResponse extends BaseResponse{
+public class DesertResponse {
 
     private String desertName;
     private List<DesertMaterialResponse> materials ;

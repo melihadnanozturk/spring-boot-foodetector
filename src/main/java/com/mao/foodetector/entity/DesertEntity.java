@@ -8,11 +8,9 @@ import java.util.List;
 
 @Entity
 @Table(name="desert")
-@Setter
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class DesertEntity {
 
     @Id

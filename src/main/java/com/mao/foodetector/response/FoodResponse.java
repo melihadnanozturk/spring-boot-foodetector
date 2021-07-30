@@ -10,12 +10,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FoodResponse extends  BaseResponse{
+public class FoodResponse {
 
     private String foodName;
     private List<FoodMaterialResponse> materials;

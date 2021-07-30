@@ -8,11 +8,9 @@ import java.util.List;
 
 @Entity
 @Table(name="food")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class FoodEntity {
 
     @Id

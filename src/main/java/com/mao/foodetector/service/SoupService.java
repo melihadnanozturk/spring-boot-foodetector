@@ -1,15 +1,15 @@
 package com.mao.foodetector.service;
 
 import com.mao.foodetector.request.SoupRequest;
-import com.mao.foodetector.response.BaseResponse;
+import com.mao.foodetector.response.DoneResponse;
 import com.mao.foodetector.response.SoupResponse;
 
 //sadece ana desert classını etkiler
 //malzeme için material service' ye git
 public interface SoupService {
     Iterable<SoupResponse> getAll();
-    BaseResponse getOne(String soupName);
-    BaseResponse updateName(String newSoupName,String soupName);
-    BaseResponse delete(String soupName);
-    BaseResponse newSoup(SoupRequest request);
+    SoupResponse getOne(String soupName);
+    SoupResponse updateName(String newSoupName,String soupName);
+    DoneResponse delete(String soupName);
+    DoneResponse newSoup(SoupRequest request);
 }

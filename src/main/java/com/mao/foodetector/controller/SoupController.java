@@ -2,6 +2,7 @@ package com.mao.foodetector.controller;
 
 import com.mao.foodetector.request.SoupRequest;
 import com.mao.foodetector.response.BaseResponse;
+import com.mao.foodetector.response.DoneResponse;
 import com.mao.foodetector.response.SoupResponse;
 import com.mao.foodetector.service.SoupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,22 +25,22 @@ public class SoupController {
     }
 
     @GetMapping("/{soupname}")
-    public BaseResponse getOne(@PathVariable String soupname){
+    public SoupResponse getOne(@PathVariable String soupname){
         return soupService.getOne(soupname);
     }
 
     @PutMapping("/{soupname}/{newsoupname}")
-    public BaseResponse updateName(@PathVariable String newsoupname,@PathVariable String soupname){
+    public SoupResponse updateName(@PathVariable String newsoupname,@PathVariable String soupname){
         return soupService.updateName(newsoupname,soupname);
     }
 
     @DeleteMapping("/{soupname}")
-    public BaseResponse delete(@PathVariable String soupname){
+    public DoneResponse delete(@PathVariable String soupname){
         return soupService.delete(soupname);
     }
 
     @PostMapping
-    public BaseResponse newSoup(@RequestBody SoupRequest request){
+    public DoneResponse newSoup(@RequestBody SoupRequest request){
         return soupService.newSoup(request);
     }
 }

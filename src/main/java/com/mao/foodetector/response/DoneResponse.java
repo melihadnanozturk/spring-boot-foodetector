@@ -1,14 +1,9 @@
 package com.mao.foodetector.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-public class DoneResponse extends BaseResponse{
+public class DoneResponse {
     private String message;
 }

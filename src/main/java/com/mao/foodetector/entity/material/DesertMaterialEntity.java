@@ -6,11 +6,9 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="materialofdesert")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class DesertMaterialEntity {
 
     @Id

@@ -1,22 +1,22 @@
 package com.mao.foodetector.request;
 
-import com.mao.foodetector.entity.material.SoupMaterialEntity;
 import com.mao.foodetector.request.mtrequest.SoupMaterialRequest;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SoupRequest extends BaseRequest{
+public class SoupRequest {
 
+    @NotNull(message = "soupName connot be null")
+    @Size(min = 3, max = 20, message = "soupName's size must be between to {min} and {max}")
     private String soupName;
+
+    @NotNull(message = "You must write least one Soup material!!!")
     private List<SoupMaterialRequest> materials;
 
 }

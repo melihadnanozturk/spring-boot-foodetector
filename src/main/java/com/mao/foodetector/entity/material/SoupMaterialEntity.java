@@ -6,11 +6,9 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="materialofsoup")
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class SoupMaterialEntity {
 
     @Id

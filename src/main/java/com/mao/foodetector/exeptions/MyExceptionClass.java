@@ -10,8 +10,9 @@ import java.time.ZonedDateTime;
 @Setter
 @AllArgsConstructor
 public class MyExceptionClass {
-    private final String message;
-    private final HttpStatus httpStatus;
-    private final ZonedDateTime time;
+    private Throwable throwable;
+    private String message;
+    private HttpStatus httpStatus;
+    private ZonedDateTime time;
 
 }

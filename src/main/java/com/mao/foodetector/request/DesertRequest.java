@@ -1,24 +1,20 @@
 package com.mao.foodetector.request;
 
-import com.mao.foodetector.entity.material.DesertMaterialEntity;
-import com.mao.foodetector.entity.material.SoupMaterialEntity;
 import com.mao.foodetector.request.mtrequest.DesertMaterialRequest;
-import com.mao.foodetector.response.BaseResponse;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class DesertRequest extends BaseRequest {
+@Data
+public class DesertRequest {
 
+    @NotNull(message = "desertName cannot be null!!!")
+    @Size(min = 5, max = 10, message = "desertName's size must be between to {min} and {max}!!!")
     private String desertName;
+
+    @NotNull(message = "You must write least one Desert material!!!")
     private List<DesertMaterialRequest> materials;
 
 }

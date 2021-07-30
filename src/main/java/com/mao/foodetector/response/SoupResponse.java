@@ -9,12 +9,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SoupResponse extends BaseResponse{
+public class SoupResponse {
 
     private String soupName;
     private List<SoupMaterialResponse> materials;

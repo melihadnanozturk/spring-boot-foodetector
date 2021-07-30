@@ -7,13 +7,11 @@ import com.mao.foodetector.exeptions.RegisterNotFoundException;
 import com.mao.foodetector.repository.FoodRepository;
 import com.mao.foodetector.repository.repoMtrl.FoodMaterialRepository;
 import com.mao.foodetector.request.FoodRequest;
-import com.mao.foodetector.response.BaseResponse;
 import com.mao.foodetector.response.DoneResponse;
 import com.mao.foodetector.response.FoodResponse;
 import com.mao.foodetector.response.respoMtrl.FoodMaterialResponse;
 import com.mao.foodetector.service.FoodService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -89,7 +87,7 @@ public class FoodImp implements FoodService {
     }
 
     @Override
-    public BaseResponse newFood(FoodRequest request) {
+    public DoneResponse newFood(FoodRequest request) {
         if (kayitCekme(request.getFoodName()).isPresent()) {
             throw new RegisterAddedBeforeThisException("Bu isimden zaten kayıt mevcut!!!");
         }

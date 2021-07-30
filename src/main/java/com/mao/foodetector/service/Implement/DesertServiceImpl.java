@@ -12,6 +12,7 @@ import com.mao.foodetector.response.DesertResponse;
 import com.mao.foodetector.response.DoneResponse;
 import com.mao.foodetector.response.respoMtrl.DesertMaterialResponse;
 import com.mao.foodetector.service.DesertService;
+import com.mao.foodetector.service.serviceMtrl.DesertMaterialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,19 +25,22 @@ import java.util.Optional;
  silinen yemeğin malzemeleri yemek silindiğindehalen silinmiyor,
  material repository' yi service implemente edip çağırmak daha manıtklı
 */
-public class DesertImp implements DesertService {
+public class DesertServiceImpl implements DesertService {
+
+
+    private DesertRepository desertRepository;
+    private DesertMaterialService desertMaterialService;
 
     @Autowired
-    private DesertRepository desertRepository;
-    @Autowired
-    private DesertMaterialRepository desertMaterialRepository;
+    public DesertServiceImpl(DesertRepository repository,DesertMaterialService desertMaterialService){
+        this.desertRepository=repository;
+        this.desertMaterialService=desertMaterialService;
+    }
 
 
     @Override
-    public Iterable<DesertResponse> getAll() {
-        List<DesertResponse> liste = new ArrayList<>();
+    public Iterable<DesertResponse> getAll( List<DesertResponse> liste,DesertResponse response) {
         desertRepository.findAll().forEach(x -> {
-            DesertResponse response = new DesertResponse();
             response.setDesertName(x.getDesertName());
             liste.add(response);
         });
@@ -48,6 +52,7 @@ public class DesertImp implements DesertService {
     public DesertResponse getOne(String desertName) {
         DesertEntity entity = desertRepository.findByDesertName(desertName).
                 orElseThrow(() -> new RegisterNotFoundException("Girilen isimde tatlı bulunamadı!!!"));
+
         List<DesertMaterialResponse> materials = new ArrayList<>();
         entity.getMaterials().forEach(x -> {
             DesertMaterialResponse material = new DesertMaterialResponse();
@@ -67,8 +72,10 @@ public class DesertImp implements DesertService {
     public DesertResponse updateName(String desertName, String newName) {
         DesertEntity entity = desertRepository.findByDesertName(desertName).
                 orElseThrow(() -> new RegisterNotFoundException("Girilen isimde tatlı bulunamadı!!!"));
+
         entity.setDesertName(newName);
         desertRepository.save(entity);
+
         DesertResponse response = new DesertResponse();
         response.setDesertName(entity.getDesertName());
         return response;
@@ -77,22 +84,18 @@ public class DesertImp implements DesertService {
     @Override
     public DoneResponse delete(String desertName) {
         DesertEntity entity=desertRepository.findByDesertName(desertName).get();
-        if(entity!=null){
-            entity.getMaterials().forEach(x->{
-                desertMaterialRepository.delete(x);
-            });
+            desertMaterialService.deleteEntityMaterials(entity);
             desertRepository.delete(entity);
 
             DoneResponse response=new DoneResponse("Silme işlemi yapıldı el ile kontrol et!!!");
             return response;
+
         }
 
-        throw new RegisterNotFoundException("Girilen isimde tatlı bulunamadı!!!");
-    }
 
     @Override
     //bu yazı silinmediyse iyileştirme daha yapılmamıştır
-    public BaseResponse newDesert(DesertRequest request) {
+    public DoneResponse newDesert(DesertRequest request) {
         if (kayıtCekme(request.getDesertName()).isPresent()) {
             throw new RegisterAddedBeforeThisException("Bu isimden zaten kayıt mevcut!!!");
         }
@@ -105,7 +108,7 @@ public class DesertImp implements DesertService {
             materialEntity.setMaterialName(x.getMaterialName());
             materialEntity.setMaterialInfo(x.getMaterialInfo());
             materialEntity.setDesertId(entity.getId());
-            desertMaterialRepository.save(materialEntity);
+            //desertMaterialRepository.save(materialEntity);
         });
 
         DoneResponse response = new DoneResponse("*" + request.getDesertName() + "*  eklendi");
