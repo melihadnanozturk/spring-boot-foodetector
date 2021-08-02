@@ -17,7 +17,7 @@ We can find new food/soup/desert,save,delete and upgrade with this project.
 *Service*
 ->for methods, We wrote all necessary work in it
 
---getAll();     to see all object (only object name ,not materials)
---updateName();     to update object name(only object name, will be added soon for materials)
---delete();     to delete object together object materials
---newDesert();      to create new object together object materials
+-getAll();     to see all object (only object name ,not materials)
+-updateName();     to update object name(only object name, will be added soon for materials)
+-delete();     to delete object together object materials
+-newDesert();      to create new object together object materials
