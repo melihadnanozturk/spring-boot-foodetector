@@ -21,20 +21,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-/*bu yorum silinmediyse problem şu:
- silinen yemeğin malzemeleri yemek silindiğindehalen silinmiyor,
- material repository' yi service implemente edip çağırmak daha manıtklı
-*/
+
 public class DesertServiceImpl implements DesertService {
 
 
     private DesertRepository desertRepository;
-    private DesertMaterialService desertMaterialService;
+    private DesertMaterialRepository desertMaterialRepository;
 
     @Autowired
-    public DesertServiceImpl(DesertRepository repository,DesertMaterialService desertMaterialService){
+    public DesertServiceImpl(DesertRepository repository,DesertMaterialRepository desertMaterialRepository){
         this.desertRepository=repository;
-        this.desertMaterialService=desertMaterialService;
+        this.desertMaterialRepository=desertMaterialRepository;
     }
 
 
@@ -83,18 +80,18 @@ public class DesertServiceImpl implements DesertService {
 
     @Override
     public DoneResponse delete(String desertName) {
-        DesertEntity entity=desertRepository.findByDesertName(desertName).get();
-            desertMaterialService.deleteEntityMaterials(entity);
-            desertRepository.delete(entity);
-
-            DoneResponse response=new DoneResponse("Silme işlemi yapıldı el ile kontrol et!!!");
-            return response;
-
-        }
+    DesertEntity entity=desertRepository.findByDesertName(desertName)
+            .orElseThrow(()->new RegisterNotFoundException("Register not founded, please write correct desertName"));
+    entity.getMaterials().forEach(x->{
+        desertMaterialRepository.delete(x);
+    });
+    desertRepository.delete(entity);
+    DoneResponse response=new DoneResponse("Desert deleted please check it");
+    return response;
+    }
 
 
     @Override
-    //bu yazı silinmediyse iyileştirme daha yapılmamıştır
     public DoneResponse newDesert(DesertRequest request) {
         if (kayıtCekme(request.getDesertName()).isPresent()) {
             throw new RegisterAddedBeforeThisException("Bu isimden zaten kayıt mevcut!!!");
@@ -108,7 +105,7 @@ public class DesertServiceImpl implements DesertService {
             materialEntity.setMaterialName(x.getMaterialName());
             materialEntity.setMaterialInfo(x.getMaterialInfo());
             materialEntity.setDesertId(entity.getId());
-            //desertMaterialRepository.save(materialEntity);
+            desertMaterialRepository.save(materialEntity);
         });
 
         DoneResponse response = new DoneResponse("*" + request.getDesertName() + "*  eklendi");

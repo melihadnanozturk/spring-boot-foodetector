@@ -6,6 +6,7 @@ import com.mao.foodetector.response.DoneResponse;
 import com.mao.foodetector.response.FoodResponse;
 import com.mao.foodetector.service.FoodService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -42,7 +43,8 @@ public class FoodController {
     }
 
     @PostMapping
-    public DoneResponse newDesert(@RequestBody @Valid FoodRequest request){
-        return foodService.newFood(request);
+    public ResponseEntity<?> newDesert(@RequestBody @Valid FoodRequest request){
+                foodService.newFood(request);
+             return   ResponseEntity.ok("NewFood added.");
     }
 }

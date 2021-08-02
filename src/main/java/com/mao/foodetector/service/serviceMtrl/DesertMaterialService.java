@@ -7,5 +7,6 @@ import com.mao.foodetector.request.mtrequest.DesertMaterialRequest;
 import com.mao.foodetector.response.BaseResponse;
 
 public interface DesertMaterialService {
-    public void deleteEntityMaterials(DesertEntity entity);
+    void deleteEntityMaterials(DesertEntity entity);
+    void saveEntityMaterials(DesertMaterialEntity materialEntity);
 }

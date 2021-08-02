@@ -31,5 +31,10 @@ public class DesertMaterialServiceImp implements DesertMaterialService {
             desertMaterialRepository.delete(x);
         });
     }
+
+    @Override
+    public void saveEntityMaterials(DesertMaterialEntity materialEntity){
+        desertMaterialRepository.save(materialEntity);
+    }
 }
 

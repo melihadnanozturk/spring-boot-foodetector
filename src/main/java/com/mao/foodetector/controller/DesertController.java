@@ -50,7 +50,7 @@ public class DesertController {
     @PostMapping
     public ResponseEntity<?> newDesert(@RequestBody @Valid DesertRequest request){
         desertService.newDesert(request);
-        return ResponseEntity.ok("tmmdır");
+        return ResponseEntity.ok("NewDesert added.");
     }
 
 }

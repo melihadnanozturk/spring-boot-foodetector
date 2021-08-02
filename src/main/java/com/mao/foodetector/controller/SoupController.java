@@ -6,7 +6,10 @@ import com.mao.foodetector.response.DoneResponse;
 import com.mao.foodetector.response.SoupResponse;
 import com.mao.foodetector.service.SoupService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/soups")
@@ -40,7 +43,8 @@ public class SoupController {
     }
 
     @PostMapping
-    public DoneResponse newSoup(@RequestBody SoupRequest request){
-        return soupService.newSoup(request);
+    public ResponseEntity<?> newSoup(@Valid @RequestBody SoupRequest request){
+        soupService.newSoup(request);
+        return ResponseEntity.ok("NewSoup added");
     }
 }

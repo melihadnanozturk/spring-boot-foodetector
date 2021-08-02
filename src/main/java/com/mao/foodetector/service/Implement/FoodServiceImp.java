@@ -11,6 +11,8 @@ import com.mao.foodetector.response.DoneResponse;
 import com.mao.foodetector.response.FoodResponse;
 import com.mao.foodetector.response.respoMtrl.FoodMaterialResponse;
 import com.mao.foodetector.service.FoodService;
+import com.mao.foodetector.service.Implement.ImpMtrl.FoodMaterialServiceImp;
+import com.mao.foodetector.service.serviceMtrl.FoodMaterialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,17 +21,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-/*bu yorum silinmediyse problem şu:
- silinen yemeğin malzemeleri yemek silindiğindehalen silinmiyor,
- material repository' yi service implemente edip çağırmak daha manıtklı
-*/
-public class FoodImp implements FoodService {
 
+public class FoodServiceImp implements FoodService {
+    FoodRepository foodRepository;
+    FoodMaterialRepository foodMaterialRepository;
     @Autowired
-    private FoodRepository foodRepository;
-
-    @Autowired
-    private FoodMaterialRepository foodMaterialRepository;
+    public FoodServiceImp(FoodRepository foodRepository,FoodMaterialRepository foodMaterialRepository){
+        this.foodRepository=foodRepository;
+        this.foodMaterialRepository=foodMaterialRepository;
+    }
 
     @Override
     public List<FoodResponse> getAll() {
@@ -46,8 +46,10 @@ public class FoodImp implements FoodService {
     public FoodResponse getOne(String foodName) {
         FoodEntity entity = foodRepository.findByFoodName(foodName).
                 orElseThrow(() -> new RegisterNotFoundException("Girilen isimde yemek bulunamadı!!!"));
+
         FoodResponse response = new FoodResponse();
         response.setFoodName(entity.getFoodName());
+
         List<FoodMaterialResponse> materials = new ArrayList<>();
         entity.getMaterials().forEach(x -> {
             FoodMaterialResponse materialResponse = new FoodMaterialResponse();
@@ -61,7 +63,6 @@ public class FoodImp implements FoodService {
     }
 
     @Override
-    //response Return olucağına direkt mesaj da verebilirsin
     public FoodResponse updateName(String foodName, String newname) {
         FoodEntity entity = foodRepository.findByFoodName(foodName).
                 orElseThrow(() -> new RegisterNotFoundException("Verilen isimde yemek bulunamadı!!!"));
@@ -74,17 +75,17 @@ public class FoodImp implements FoodService {
 
     @Override
     public DoneResponse delete(String foodName) {
-        FoodEntity entity=foodRepository.findByFoodName(foodName).get();
-                if(entity!=null){
-                    entity.getMaterials().forEach(x->{
-                        foodMaterialRepository.delete(x);
-                    });
-                    foodRepository.delete(entity);
-                    DoneResponse response=new DoneResponse("Silme işlemi gerçekleşti lütfen el ile kontrol ediniz!!!");
-                    return  response;
-                }
-                throw new RegisterNotFoundException("Verilen isimde yemek bulunamadı!!!");
+        FoodEntity entity=foodRepository.findByFoodName(foodName)
+                .orElseThrow(()->new RegisterNotFoundException("Register not founded, please write correct foodName"));
+        entity.getMaterials().forEach(x->{
+            foodMaterialRepository.delete(x);
+        });
+        foodRepository.delete(entity);
+        DoneResponse response=new DoneResponse("Food deleted please check it");
+        return response;
     }
+
+
 
     @Override
     public DoneResponse newFood(FoodRequest request) {

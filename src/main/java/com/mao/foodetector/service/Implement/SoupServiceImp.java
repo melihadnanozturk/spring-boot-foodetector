@@ -10,7 +10,9 @@ import com.mao.foodetector.request.SoupRequest;
 import com.mao.foodetector.response.DoneResponse;
 import com.mao.foodetector.response.SoupResponse;
 import com.mao.foodetector.response.respoMtrl.SoupMaterialResponse;
+import com.mao.foodetector.service.Implement.ImpMtrl.SoupMaterialServiceImp;
 import com.mao.foodetector.service.SoupService;
+import com.mao.foodetector.service.serviceMtrl.SoupMaterialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,16 +21,18 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-/*bu yorum silinmediyse problem şu:
- silinen yemeğin malzemeleri yemek silindiğindehalen silinmiyor,
- material repository' yi service implemente edip çağırmak daha manıtklı
-*/
-public class SoupImp implements SoupService {
+
+public class SoupServiceImp implements SoupService {
+
+    private SoupRepository soupRepository;
+    private SoupMaterialRepository soupMaterialRepository;
 
     @Autowired
-    private SoupRepository soupRepository;
-    @Autowired
-    private SoupMaterialRepository soupMaterialRepository;
+    public SoupServiceImp(SoupRepository soupRepository, SoupMaterialRepository soupMaterialRepository){
+        this.soupRepository=soupRepository;
+        this.soupMaterialRepository=soupMaterialRepository;
+    }
+
 
     @Override
     public Iterable<SoupResponse> getAll() {
@@ -64,7 +68,6 @@ public class SoupImp implements SoupService {
     }
 
     @Override
-    //geliştirilme yapılıcak :D
     public SoupResponse updateName(String newname, String soupname) {
         SoupEntity entity = soupRepository.findBySoupName(soupname).
                 orElseThrow(() -> new RegisterNotFoundException("Girilen isimde çorba bulunamadı!!!"));
@@ -79,17 +82,16 @@ public class SoupImp implements SoupService {
 
     @Override
     public DoneResponse delete(String soupName) {
-        SoupEntity entity = soupRepository.findBySoupName(soupName).get();
-        if (entity != null) {
-            entity.getMaterials().forEach(x -> {
-                soupMaterialRepository.delete(x);
-            });
-            soupRepository.delete(entity);
-            DoneResponse response = new DoneResponse("Silme işlemi gerçekleşti lütfen el ile kontrol et !!!");
-            return response;
-        }
-        throw new RegisterNotFoundException("Girilen isimde çorba bulunamadoı!!!");
+        SoupEntity entity = soupRepository.findBySoupName(soupName)
+                .orElseThrow(() -> new RegisterNotFoundException("Register not founded,please write correct soupName"));
+        entity.getMaterials().forEach(x->{
+            soupMaterialRepository.delete(x);
+        });
+        soupRepository.delete(entity);
+        DoneResponse response=new DoneResponse("Soup deleted, please check it");
+        return response;
     }
+
 
     @Override
     public DoneResponse newSoup(SoupRequest request) {
