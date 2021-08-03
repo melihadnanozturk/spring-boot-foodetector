@@ -135,7 +135,7 @@ class DesertServiceImplTest {
         });
     }
 
-    @Test
+   /* @Test
     void newDesert() {
 
         List<DesertMaterialRequest> material=new ArrayList<>();
@@ -148,7 +148,7 @@ class DesertServiceImplTest {
 
         DoneResponse response=desertServiceImp.newDesert(request);
         Assertions.assertEquals(response.getMessage(),"*"+request.getDesertName()+"*  eklendi");
-    }
+    }*/
 
     @Test
     void kayıtCekme() {
