@@ -28,7 +28,7 @@ public class DesertController {
 
     @GetMapping
     public Iterable<DesertResponse> getAll(){
-        return desertService.getAll(new ArrayList<>(),new DesertResponse());
+        return desertService.getAll();
     }
 
     @GetMapping("/{desertname}")

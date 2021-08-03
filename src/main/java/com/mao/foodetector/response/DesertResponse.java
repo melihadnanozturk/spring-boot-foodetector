@@ -18,4 +18,8 @@ public class DesertResponse {
 
     private String desertName;
     private List<DesertMaterialResponse> materials ;
+
+    public DesertResponse(String desertName){
+        this.desertName=desertName;
+    }
 }

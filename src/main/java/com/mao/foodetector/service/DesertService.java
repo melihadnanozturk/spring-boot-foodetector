@@ -11,7 +11,7 @@ import java.util.List;
 //malzeme için material service' ye git
 public interface DesertService {
 
-    Iterable<DesertResponse> getAll(List<DesertResponse> liste, DesertResponse response);
+    Iterable<DesertResponse> getAll();
     DesertResponse getOne(String desertName);
     DesertResponse updateName(String desertName, String newName);
     DoneResponse delete(String desertName);

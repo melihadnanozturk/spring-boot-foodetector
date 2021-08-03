@@ -21,10 +21,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-
 public class FoodServiceImp implements FoodService {
+
     FoodRepository foodRepository;
     FoodMaterialRepository foodMaterialRepository;
+
     @Autowired
     public FoodServiceImp(FoodRepository foodRepository,FoodMaterialRepository foodMaterialRepository){
         this.foodRepository=foodRepository;

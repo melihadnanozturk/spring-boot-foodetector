@@ -2,6 +2,7 @@ package com.mao.foodetector.service.Implement;
 
 import com.mao.foodetector.entity.DesertEntity;
 import com.mao.foodetector.entity.material.DesertMaterialEntity;
+import com.mao.foodetector.exeptions.MaterialNotBeNullException;
 import com.mao.foodetector.exeptions.RegisterAddedBeforeThisException;
 import com.mao.foodetector.exeptions.RegisterNotFoundException;
 import com.mao.foodetector.repository.DesertRepository;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-
 public class DesertServiceImpl implements DesertService {
 
 
@@ -36,9 +36,10 @@ public class DesertServiceImpl implements DesertService {
 
 
     @Override
-    public Iterable<DesertResponse> getAll( List<DesertResponse> liste,DesertResponse response) {
-        desertRepository.findAll().forEach(x -> {
-            response.setDesertName(x.getDesertName());
+    public List<DesertResponse> getAll() {
+        List<DesertResponse> liste=new ArrayList<>();
+        desertRepository.findAll().forEach(x->{
+            DesertResponse response=new DesertResponse(x.getDesertName());
             liste.add(response);
         });
         return liste;
@@ -49,6 +50,7 @@ public class DesertServiceImpl implements DesertService {
     public DesertResponse getOne(String desertName) {
         DesertEntity entity = desertRepository.findByDesertName(desertName).
                 orElseThrow(() -> new RegisterNotFoundException("Girilen isimde tatlı bulunamadı!!!"));
+
 
         List<DesertMaterialResponse> materials = new ArrayList<>();
         entity.getMaterials().forEach(x -> {
@@ -82,9 +84,11 @@ public class DesertServiceImpl implements DesertService {
     public DoneResponse delete(String desertName) {
     DesertEntity entity=desertRepository.findByDesertName(desertName)
             .orElseThrow(()->new RegisterNotFoundException("Register not founded, please write correct desertName"));
+
     entity.getMaterials().forEach(x->{
         desertMaterialRepository.delete(x);
     });
+
     desertRepository.delete(entity);
     DoneResponse response=new DoneResponse("Desert deleted please check it");
     return response;

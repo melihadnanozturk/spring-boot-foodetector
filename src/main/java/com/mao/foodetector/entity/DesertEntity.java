@@ -25,5 +25,9 @@ public class DesertEntity {
     @JoinColumn(name="desert_id",referencedColumnName = "id")
     private List<DesertMaterialEntity> materials;
 
+    public DesertEntity(Integer id,String desertName){
+        this.id=id;
+        this.desertName=desertName;
+    }
 
 }
