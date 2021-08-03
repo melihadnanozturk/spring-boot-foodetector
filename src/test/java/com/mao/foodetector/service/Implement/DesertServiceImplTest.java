@@ -135,7 +135,7 @@ class DesertServiceImplTest {
         });
     }
 
-   /* @Test
+    @Test
     void newDesert() {
 
         List<DesertMaterialRequest> material=new ArrayList<>();
@@ -143,12 +143,12 @@ class DesertServiceImplTest {
         DesertRequest request=new DesertRequest("test-mat",material);
 
         when(desertRepository.findByDesertName("test-mat")).thenReturn(Optional.empty());
-        when(desertRepository.save(any(DesertEntity.class))).thenReturn(any(DesertEntity.class));
-        when(desertMaterialRepository.save(any(DesertMaterialEntity.class))).thenReturn(any(DesertMaterialEntity.class));
+        when(desertRepository.save(any())).thenReturn(any(DesertEntity.class));
+        when(desertMaterialRepository.save(any())).thenReturn(any(DesertMaterialEntity.class));
 
         DoneResponse response=desertServiceImp.newDesert(request);
         Assertions.assertEquals(response.getMessage(),"*"+request.getDesertName()+"*  eklendi");
-    }*/
+    }
 
     @Test
     void kayıtCekme() {
