@@ -110,14 +110,14 @@ class DesertServiceImplTest {
         });
     }
 
-    /*@Test
+    @Test
     //delete(); kodunun nasıl testini yazabilirim?
     void delete() {
         List<DesertMaterialEntity> material = new ArrayList<>();
         material.add(new DesertMaterialEntity(1, "test-desert", "test-info", 1));
         DesertEntity entity =new DesertEntity(1, "test", material);
-        when(any(DesertRepository.class)).thenReturn((DesertRepository) entity)
-    }*/
+        when(any(DesertRepository.class)).thenReturn((DesertRepository) entity);
+    }
 
     @Test
     void testDelete_souldThrowNullPointerExceptionWhenEntityDoesNotHaveAnyMaterial(){
