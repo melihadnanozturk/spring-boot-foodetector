@@ -26,4 +26,9 @@ public class FoodEntity {
     @JoinColumn(name="food_id",referencedColumnName = "id")
     private List<FoodMaterialEntity> materials;
 
+    public FoodEntity(Integer id,String foodName){
+        this.id=id;
+        this.foodName=foodName;
+    }
+
 }

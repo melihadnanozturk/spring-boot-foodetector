@@ -29,4 +29,9 @@ public class FoodMaterialEntity {
         this.materialName=material_name;
         this.materialInfo=material_info;
     }
+    public FoodMaterialEntity(String material_name,String material_info,Integer foodId){
+        this.materialName=material_name;
+        this.materialInfo=material_info;
+        this.foodId=foodId ;
+    }
 }
