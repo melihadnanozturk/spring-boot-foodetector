@@ -127,20 +127,6 @@ class FoodServiceImpTest {
         FoodResponse response = foodServiceImp.updateName("test", "newName");
         Assertions.assertNull(response.getMaterials());
     }
-    /*
-    *
-    *
-    *
-    *
-    *
-    *
-    * ---------------deleteye geldin --------------yazılacaklar var !!!
-    *
-    *
-    *
-    *
-    *
-     */
 
     @Test
     void delete() {
