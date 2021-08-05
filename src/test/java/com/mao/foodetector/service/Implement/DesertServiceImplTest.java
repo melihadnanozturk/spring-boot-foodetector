@@ -1,7 +1,9 @@
 package com.mao.foodetector.service.Implement;
 
 import com.mao.foodetector.entity.DesertEntity;
+import com.mao.foodetector.entity.SoupEntity;
 import com.mao.foodetector.entity.material.DesertMaterialEntity;
+import com.mao.foodetector.exeptions.RegisterAddedBeforeThisException;
 import com.mao.foodetector.exeptions.RegisterNotFoundException;
 import com.mao.foodetector.repository.DesertRepository;
 import com.mao.foodetector.repository.repoMtrl.DesertMaterialRepository;
@@ -16,7 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -27,12 +28,14 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DesertServiceImplTest {
 
     @Mock
     DesertRepository desertRepository;
+
     @Mock
     DesertMaterialRepository desertMaterialRepository;
 
@@ -50,7 +53,7 @@ class DesertServiceImplTest {
     }
 
     @Test
-    void testGetAll_shouldBeTrueWhenListIsEmpty() {
+    void testGetAll_shouldBeEmptyWhenThereIsNotAnyRegister() {
         Mockito.when(desertRepository.findAll()).thenReturn(new ArrayList<>());
         Assertions.assertTrue(desertServiceImp.getAll().isEmpty());
     }
@@ -79,9 +82,7 @@ class DesertServiceImplTest {
         });
     }
 
-    //bu durumun düşük bir olası,zaten kullanıcı malzemesi null olan bir yemeği kayıt edemiyor.
-    //Bu yüzden eğer malzemesiz bir entity çağırılması söz konusu oluşurseki düşük ihtimal null pointer olur
-    //BU testi yazmam gereksiz olmuş olabilir :D
+    //It might be not necessary for NullPointerException
     @Test
     void testGetOne_shouldThrowNullPointerExceptionIfAnyEntityDoesNotMaterials() {
         DesertEntity entity = new DesertEntity(1, "testEntity");
@@ -89,6 +90,16 @@ class DesertServiceImplTest {
         Assertions.assertThrows(NullPointerException.class, () -> {
             desertServiceImp.getOne("testEntity");
         });
+    }
+
+    @Test
+    void testGetOne_responseMaterialList_shouldBeEmptyIfEntityMaterialsListIsEmpty() {
+        DesertEntity entity = new DesertEntity(1, "test", new ArrayList<>());
+        when(desertRepository.findByDesertName("test")).thenReturn(Optional.of(entity));
+
+        DesertResponse response = desertServiceImp.getOne("test");
+        Assertions.assertTrue(response.getMaterials().isEmpty());
+
     }
 
 
@@ -103,7 +114,7 @@ class DesertServiceImplTest {
     }
 
     @Test
-    void testUpdateName_shouldhrowExceptionWhenRegisterNotFounded() {
+    void testUpdateName_shouldThrowExceptionWhenRegisterNotFounded() {
         when(desertRepository.findByDesertName("test")).thenReturn(Optional.ofNullable(null));
         Assertions.assertThrows(RegisterNotFoundException.class, () -> {
             desertServiceImp.updateName("test", "new-name");
@@ -111,7 +122,16 @@ class DesertServiceImplTest {
     }
 
     @Test
-        //delete(); kodunun nasıl testini yazabilirim?
+    void testUpdateName_responseMaterialList_shouldBeNullWhenWeCallUpdateName() {
+        DesertEntity entity = new DesertEntity(1, "test", new ArrayList<>());
+        when(desertRepository.findByDesertName(any())).thenReturn(Optional.of(entity));
+
+        DesertResponse response = desertServiceImp.getOne("test");
+        Assertions.assertTrue(response.getMaterials().isEmpty());
+    }
+
+
+    @Test
     void delete() {
         List<DesertMaterialEntity> material = new ArrayList<>();
         material.add(new DesertMaterialEntity(1, "test-desert", "test-info", 1));
@@ -120,13 +140,23 @@ class DesertServiceImplTest {
 
         DoneResponse response = desertServiceImp.delete("test");
         Assertions.assertEquals(response.getMessage(), "Desert deleted please check it");
-        Mockito.verify(desertRepository, Mockito.times(1)).findByDesertName("test");
-        Mockito.verify(desertRepository, Mockito.times(1)).delete(any(DesertEntity.class));
         Mockito.verify(desertMaterialRepository, Mockito.times(1)).delete(any(DesertMaterialEntity.class));
     }
 
     @Test
-    void testDelete_souldThrowNullPointerExceptionWhenEntityDoesNotHaveAnyMaterial() {
+    void testDelete_desertRepository_shouldWorkTwiceWhenWeCallDelete() {
+        List<DesertMaterialEntity> material = new ArrayList<>();
+        material.add(new DesertMaterialEntity(1, "test-desert", "test-info", 1));
+        DesertEntity entity = new DesertEntity(1, "test", material);
+        when(desertRepository.findByDesertName("test")).thenReturn(Optional.of(entity));
+
+        DoneResponse response = desertServiceImp.delete("test");
+        verify(desertRepository, times(1)).findByDesertName(any());
+        verify(desertRepository, times(1)).delete(entity);
+    }
+
+    @Test
+    void testDelete_shouldThrowNullPointerExceptionWhenEntityDoesNotHaveAnyMaterial() {
         DesertEntity entity = new DesertEntity(1, "malzemesiz");
         when(desertRepository.findByDesertName("malzemesiz")).thenReturn(Optional.of(entity));
         Assertions.assertThrows(NullPointerException.class, () -> desertServiceImp.delete("malzemesiz"));
@@ -142,8 +172,21 @@ class DesertServiceImplTest {
     }
 
     @Test
-    void newDesert() {
+    void testDelete_desertMaterialRepository_shouldWorkOnceWhenWeCallDelete() {
+        List<DesertMaterialEntity> materials = new ArrayList<>();
+        materials.add(new DesertMaterialEntity(1, "mazleme", "info", 1));
 
+        DesertEntity entity = new DesertEntity(1, "test", materials);
+        when(desertRepository.findByDesertName("test")).thenReturn(Optional.of(entity));
+
+        desertServiceImp.delete("test");
+        verify(desertMaterialRepository,times(1)).delete(any(DesertMaterialEntity.class));
+
+
+    }
+
+    @Test
+    void newDesert() {
         List<DesertMaterialRequest> material = new ArrayList<>();
         material.add(new DesertMaterialRequest("material-name", "material-info"));
         DesertRequest request = new DesertRequest("test-mat", material);
@@ -157,6 +200,43 @@ class DesertServiceImplTest {
     }
 
     @Test
-    void kayıtCekme() {
+    void testNewDesert_shouldThrowExceptionIfRegisterAddedBeforeThat(){
+        when(desertRepository.findByDesertName(any())).thenReturn(Optional.of(new DesertEntity()));
+        DesertRequest request=new DesertRequest();
+        Assertions.assertThrows(RegisterAddedBeforeThisException.class,()->{
+            desertServiceImp.newDesert(request);
+        });
+    }
+
+    @Test
+    void testNewDesert_desertRepository_shouldWorkTwiceWhenWeCallNewDesert(){
+        List<DesertMaterialRequest> material = new ArrayList<>();
+        material.add(new DesertMaterialRequest("material-name", "material-info"));
+        DesertRequest request = new DesertRequest("test-mat", material);
+        when(desertRepository.findByDesertName("test-mat")).thenReturn(Optional.empty());
+
+        desertServiceImp.newDesert(request);
+        verify(desertRepository,times(1)).findByDesertName(request.getDesertName());
+        verify(desertRepository,times(1)).save(any(DesertEntity.class));
+    }
+
+    @Test
+    void testNewDesert_desertMaterialRepository_shouldWorkOnceWhenWeCallNewDesert(){
+        List<DesertMaterialRequest> material = new ArrayList<>();
+        material.add(new DesertMaterialRequest("material-name", "material-info"));
+        DesertRequest request = new DesertRequest("test-mat", material);
+        when(desertRepository.findByDesertName("test-mat")).thenReturn(Optional.empty());
+
+        desertServiceImp.newDesert(request);
+        verify(desertMaterialRepository,times(1)).save(any(DesertMaterialEntity.class));
+    }
+
+    @Test
+    void testNewDesert_desertMaterialRepository_shouldNotWorkIfRegisterMaterialListIsEmpty(){
+        DesertRequest request = new DesertRequest("test-mat", new ArrayList<>());
+        when(desertRepository.findByDesertName("test-mat")).thenReturn(Optional.empty());
+
+        desertServiceImp.newDesert(request);
+        verifyNoInteractions(desertMaterialRepository);
     }
 }

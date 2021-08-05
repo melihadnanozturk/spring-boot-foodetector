@@ -17,9 +17,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import javax.swing.text.html.Option;
-import javax.validation.constraints.NotNull;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -43,20 +42,17 @@ class FoodServiceImpTest {
     void getAll() {
         List<FoodEntity> liste = new ArrayList<>();
         liste.add(new FoodEntity(1, "test"));
-        liste.add(new FoodEntity(2, "test2"));
 
         when(foodRepository.findAll()).thenReturn(liste);
         List<FoodResponse> test = foodServiceImp.getAll();
 
         Assertions.assertFalse(test.isEmpty());
         Assertions.assertEquals(test.get(0).getFoodName(), liste.get(0).getFoodName());
-        Assertions.assertEquals(test.get(1).getFoodName(), liste.get(1).getFoodName());
         Assertions.assertEquals(test.get(0).getMaterials(), null);
-        Assertions.assertEquals(test.get(1).getMaterials(), null);
     }
 
     @Test
-    void testGetAll_shouldHasEmptyList() {
+    void testGetAll_shouldReturnEmptyListIfThereIsNotAnyEntity() {
         when(foodRepository.findAll()).thenReturn(new ArrayList<>());
         List<FoodResponse> liste = foodServiceImp.getAll();
         Assertions.assertTrue(liste.isEmpty());
@@ -131,6 +127,20 @@ class FoodServiceImpTest {
         FoodResponse response = foodServiceImp.updateName("test", "newName");
         Assertions.assertNull(response.getMaterials());
     }
+    /*
+    *
+    *
+    *
+    *
+    *
+    *
+    * ---------------deleteye geldin --------------yazılacaklar var !!!
+    *
+    *
+    *
+    *
+    *
+     */
 
     @Test
     void delete() {
@@ -153,12 +163,38 @@ class FoodServiceImpTest {
     }
 
     @Test
-    void testDelete_shouldNotWorkMaterialRepositoryWhenMaterialListIsBeNull() {
+    void testDelete_shouldNotWorkMaterialRepositoryWhenMaterialListIsEmpty() {
         FoodEntity entity = new FoodEntity(1, "test", new ArrayList<>());
         when(foodRepository.findByFoodName("test")).thenReturn(Optional.of(entity));
 
         foodServiceImp.delete("test");
         verifyNoInteractions(foodMaterialRepository);
+    }
+
+    @Test
+    void testDelete_foodRepository_shouldWorkTwiceWhenWeCallDelete(){
+        List<FoodMaterialEntity> material = new ArrayList<>();
+        material.add(new FoodMaterialEntity(1,"material", "info", 1));
+
+        FoodEntity entity = new FoodEntity(1, "test", material);
+        when(foodRepository.findByFoodName("test")).thenReturn(Optional.of(entity));
+
+        foodServiceImp.delete("test");
+
+        verify(foodRepository,times(1)).findByFoodName(any());
+        verify(foodRepository,times(1)).delete(any(FoodEntity.class));
+    }
+
+    @Test
+    void testDelete_fooodMaterialRepository_shouldWorkOnceWhenWeCallDelete(){
+        List<FoodMaterialEntity> material = new ArrayList<>();
+        material.add(new FoodMaterialEntity("material", "info", 1));
+
+        FoodEntity entity = new FoodEntity(1, "test", material);
+        when(foodRepository.findByFoodName("test")).thenReturn(Optional.of(entity));
+
+        foodServiceImp.delete("test");
+        verify(foodMaterialRepository,times(1)).delete(any(FoodMaterialEntity.class));
     }
 
     @Test
@@ -184,13 +220,37 @@ class FoodServiceImpTest {
     }
 
     @Test
-    void testNewFood_shouldNotWorkMaterialRepositoryWhenRequestDoesNotGiveMaterialInformation() {
-        FoodRequest request = new FoodRequest("malzemesiz", new ArrayList<>());
-        when(foodRepository.findByFoodName("malzemesiz")).thenReturn(Optional.empty());
+    void testNewFood_foodRepository_shouldWorkTwiceWhenWeCallNewFood(){
+        List<FoodMaterialRequest> material = new ArrayList<>();
+        material.add(new FoodMaterialRequest("malzeme", "info"));
+
+        FoodRequest request = new FoodRequest("test", material);
+        when(foodRepository.findByFoodName("test")).thenReturn(Optional.empty());
 
         foodServiceImp.newFood(request);
-        verify(foodRepository, times(1)).save(any(FoodEntity.class));
-        verifyNoInteractions(foodMaterialRepository);
-
+        verify(foodRepository,times(1)).findByFoodName(request.getFoodName());
+        verify(foodRepository,times(1)).save(any(FoodEntity.class));
     }
+
+    @Test
+    void testNewFood_foodMaterialRepository_shouldWhenWeCallNewFood(){
+        List<FoodMaterialRequest> material = new ArrayList<>();
+        material.add(new FoodMaterialRequest("malzeme", "info"));
+
+        FoodRequest request = new FoodRequest("test", material);
+        when(foodRepository.findByFoodName("test")).thenReturn(Optional.empty());
+
+        foodServiceImp.newFood(request);
+        verify(foodMaterialRepository,times(1)).save(any(FoodMaterialEntity.class));
+    }
+
+    @Test
+    void testNewFood_foodMaterialRepository_shouldNotWorkIfRequestMaterialListIsEmpty(){
+        FoodRequest request=new FoodRequest("test",new ArrayList<>());
+        when(foodRepository.findByFoodName("test")).thenReturn(Optional.empty());
+
+        foodServiceImp.newFood(request);
+        verifyNoInteractions(foodMaterialRepository);
+    }
+
 }

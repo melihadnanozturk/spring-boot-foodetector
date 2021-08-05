@@ -35,7 +35,7 @@ public class SoupServiceImp implements SoupService {
 
 
     @Override
-    public Iterable<SoupResponse> getAll() {
+    public List<SoupResponse> getAll() {
         List<SoupResponse> liste = new ArrayList<>();
         soupRepository.findAll().forEach(x -> {
             SoupResponse response = SoupResponse.builder()
